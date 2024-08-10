@@ -12,7 +12,7 @@
 ::  Number of rows and number of columns in the grid.
 ::
 =/  destination-costs  (reap num-rows (reap num-columns 0))
-::  Initially, prepopulate destination-costs with a 2 of 0s, the same
+::  Initially, prepopulate destination-costs with 0s, the same
 ::  dimesions as grid. The tactic is to replace the 0 in destination-costs
 ::  at an index with the actual cheapeast cost of going from the top left
 ::  to that index.
@@ -24,8 +24,7 @@
 ::
 =/  row-index  0
 =/  column-index  0
-::  row-index and column-index keep track of what square we're actually on. By
-::  construction, row-index + column-index = distance-from-top-left.
+::  row-index and column-index keep track of what square we're actually on.
 ::
 |-
 =.  destination-costs
@@ -65,20 +64,18 @@
 ::    destination-costs[row-index - 1][column-index]
 ::  )
 ::
-?:  =(distance-from-top-left (sub (add num-rows num-columns) 2))
+?:  &(=(row-index (sub num-rows 1)) =(column-index (sub num-columns 1)))
   (snag column-index (snag row-index destination-costs))
   ::  If we're in the bottom right, produce the answer.
   ::
 ?:  |(=(column-index 0) =(row-index (sub num-rows 1)))
-  ?:  (lth +(distance-from-top-left) num-columns)
+  ?:  (lth :(add row-index column-index 1) num-columns)
     %=  $
-    distance-from-top-left  +(distance-from-top-left)
     row-index  0
-    column-index  +(distance-from-top-left)
+    column-index  :(add row-index column-index 1)
     ==
   %=  $
-  distance-from-top-left  +(distance-from-top-left)
-  row-index  (sub (add distance-from-top-left 2) num-columns)
+  row-index  (sub :(add row-index column-index 2) num-columns)
   column-index  (sub num-columns 1)
   ==
   ::  Else, if we've reached the end of our diagonal, restart again from
